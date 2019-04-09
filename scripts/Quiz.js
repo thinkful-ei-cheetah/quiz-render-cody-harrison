@@ -1,5 +1,5 @@
 'use strict';
-/*global question,trivaAPI, Model Quiz */
+/*global question,trivaAPI, Model, Quiz */
 class Quiz extends Model {
   constructor(){
     super();
@@ -35,7 +35,7 @@ class Quiz extends Model {
   }
       
 }
-const test = new trivaAPI;
+const test = new trivaAPI();
 test.newUrl().then(()=>{
   const test2=new question();
   test2.questiontext(test.questions);

@@ -1,7 +1,8 @@
 'use strict';
-/*global trivaAPI*/
-class question{
+/*global trivaAPI Model*/
+class question extends Model{
   constructor(){
+    super()
     this.text='';
     this.answers=[];
     this.correctAnswer='';
