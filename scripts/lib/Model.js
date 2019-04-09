@@ -1,3 +1,4 @@
+'use strict';
 class Model {       //eslint-disable-line no-unused-vars
   constructor() {
     if (!Model.viewMap) Model.viewMap = new WeakMap();
