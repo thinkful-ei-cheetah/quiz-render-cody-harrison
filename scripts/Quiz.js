@@ -26,23 +26,23 @@ class Quiz extends Model {
     }
     this.scoreHistory.push(this.score);
   }
+  toggleActive(){
+    if(!this.active){
+      this.active =!this.active;
+    }
     
+  }
   startNewGame() {
-    this.active = true;
     const api = new trivaAPI();
-    api.getQuestions()
+    return api.getQuestions()
       .then(data => {
         console.log(data.results);
         const questions = data.results;
         questions.forEach(question => this.unasked.push(new Question(question)));
-        this.nextQuestion();
 
       });
   }
   
-  toggleActive(){
-    this.active = !this.active;
-  }
       
 }
 // test.newUrl().then(()=>{
