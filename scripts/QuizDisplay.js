@@ -1,4 +1,4 @@
-/* global Renderer */
+/* global Renderer $ */
 'use strict';
 
 class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
@@ -6,7 +6,7 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
     this.model.startNewGame();
     return {
       'click .start': 'handleStart',
-      'click .answer': 'nextQuestion'
+      'click .submit': 'nextQuestion'
     };
   }
 
@@ -25,10 +25,9 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
 
   _generateQuestion() {
     let answerchoices=``; 
-    console.log(this.model.active);
-    this.model.unasked[0].answers.forEach(answer=>answerchoices+=`<li><button class="answer" type="radio"> ${answer}</button></li>`); 
-    return `${this.model.unasked[0].text} 
-    <form>`+answerchoices+` </form> `;
+    this.model.unasked[0].answers.forEach(answer=>answerchoices+=`<li><input name="answer" class="answer" type="radio"  value="${answer}"><label> ${answer}</lable></li>`); 
+    return `<form>${this.model.unasked[0].text} 
+    ${answerchoices}<button class="submit" type="button">Submit</button></form>`;
   }
 
 
@@ -46,6 +45,8 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
     this.model.update();
   }
   nextQuestion(){
+    // this.model.asked ( $('input[name=answer]:checked').val());
+    // console.log(this.model.asked);
     this.model.nextQuestion();
     this.model.update();
     

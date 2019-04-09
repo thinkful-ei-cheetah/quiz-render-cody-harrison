@@ -1,5 +1,5 @@
 'use strict';
-/*global Question,trivaAPI, Model, Quiz */
+/*global Question,trivaAPI, Model,$, Quiz */
 let testQuestion;
 class Quiz extends Model {
   constructor(){
@@ -11,8 +11,13 @@ class Quiz extends Model {
     this.active = false;
   }
   nextQuestion(){
-    this.asked.push(this.unasked[0]);
-    this.unasked.splice(0,1);
+    let userAnwer =$('input[name=answer]:checked').val();
+    let current = this.unasked[0];
+    current.submitAnswer(userAnwer);
+    let correctCurrent = current.answerStatus();
+    this.asked.push(this.unasked.splice(0,1));
+    
+    console.log(correctCurrent);
   }
   // addScore(userAnswer,correctAnswer){
       
