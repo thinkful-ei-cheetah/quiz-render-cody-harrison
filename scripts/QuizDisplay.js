@@ -24,7 +24,7 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
   _generateQuestion() {
     return `
       <div>
-        ${this.model.questions[0].text}
+        ${this.model.unasked[0].text}
       </div>
     `;
   }

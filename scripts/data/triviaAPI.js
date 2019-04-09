@@ -1,22 +1,15 @@
 'use strict';
-/*global trivaAPI,question,quiz*/
-class trivaAPI {
+/*global trivaAPI,question,quiz,Model*/
+class trivaAPI extends Model{
   constructor(){
+    super();
     this.questions = [];
     this.correctAnswers = [];
     this.incorrectAnswers = [];
   }
-  newUrl(){
+  getQuestions(){
     return fetch('https://opentdb.com/api.php?amount=10')
-      .then(res => res.json())
-      .then(data =>{
-        data.results.forEach(q=>{
-          this.questions.push(q.question);
-          this.correctAnswers.push(q.correct_answer);
-          this.incorrectAnswers.push(q.incorrect_answers);
-        });
-        
-      });
+      .then(res => res.json());
   }
 }
 

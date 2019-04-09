@@ -1,27 +1,25 @@
 'use strict';
-/*global trivaAPI Model*/
-class question extends Model{
-  constructor(){
-    super()
-    this.text='';
-    this.answers=[];
-    this.correctAnswer='';
+/*global trivaAPI Model */
+class Question extends Model{
+  constructor(questionData){
+    super();
+    this.text=questionData.question;
+    this.answers=[...questionData.incorrect_answers,questionData.correct_answer];
+    this.correctAnswer= questionData.correct_answer;
     this.userAnswer;
     this.questionNumber=0;
   }
-  questiontext(questionSet){
-    this.text=questionSet[this.questionNumber];
-    // questionSet.questions.pop();
-
+  submitAnswer(answer){
+    this.userAnswer = answer;
   }
-  correctAnswerChoice(questionSet){
-    this.correctAnswer=questionSet[this.questionNumber];
-    
-  }
-  answerText(questionSet){
-    this.answers = questionSet[this.questionNumber];
-    this.answers.push(this.correctAnswer);
-    this.questionNumber++;
+  answerStatus(){
+    if(!this.userAnswer){
+      return -1;
+    }else if(this.userAnswer !== this.correctAnswer){
+      return 0;
+    }else{
+      return 1;
+    }
   }
   shuffle() {
 
