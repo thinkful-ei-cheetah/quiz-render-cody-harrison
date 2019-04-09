@@ -12,7 +12,7 @@ class Quiz extends Model {
   }
   nextQuestion(){
     this.asked.push(this.unasked[0]);
-    this.unasked.pop();
+    this.unasked.splice(0,1);
   }
   // addScore(userAnswer,correctAnswer){
       
@@ -34,7 +34,6 @@ class Quiz extends Model {
         console.log(data.results);
         const questions = data.results;
         questions.forEach(question => this.unasked.push(new Question(question)));
-        this.nextQuestion();
       });
   }
   
