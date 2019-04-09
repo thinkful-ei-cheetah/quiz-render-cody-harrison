@@ -9,26 +9,21 @@ class Quiz extends Model {
     this.score = 0;
     this.scoreHistory= [];
     this.active = false;
-    this.questionNumber= 0;
-  }
-  startquestions(){
-    this.unasked.push(trivaAPI.questions);
-  
   }
   nextQuestion(){
     this.asked.push(this.unasked[0]);
     this.unasked.pop();
   }
-  addScore(userAnswer,correctAnswer){
+  // addScore(userAnswer,correctAnswer){
       
-    if(userAnswer === correctAnswer){
-      this.score++;
-    }
-    this.scoreHistory.push(this.score);
-  }
+  //   if(userAnswer === correctAnswer){
+  //     this.score++;
+  //   }
+  //   this.scoreHistory.push(this.score);
+  // }
   toggleActive(){
-    if(!this.active){
-      this.active =!this.active;
+    if(this.active===false){
+      this.active =true;
     }
     
   }
@@ -39,7 +34,7 @@ class Quiz extends Model {
         console.log(data.results);
         const questions = data.results;
         questions.forEach(question => this.unasked.push(new Question(question)));
-
+        this.nextQuestion();
       });
   }
   

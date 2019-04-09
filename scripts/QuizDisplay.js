@@ -6,6 +6,7 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
     this.model.startNewGame();
     return {
       'click .start': 'handleStart',
+      'click .answer': 'nextQuestion'
     };
   }
 
@@ -24,7 +25,8 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
 
   _generateQuestion() {
     let answerchoices=``; 
-    this.model.unasked[0].answers.forEach(answer=>answerchoices+=`<li><button type="radio"> ${answer}</button></li>`); 
+    console.log(this.model.active);
+    this.model.unasked[0].answers.forEach(answer=>answerchoices+=`<li><button class="answer" type="radio"> ${answer}</button></li>`); 
     return `${this.model.unasked[0].text} 
     <form>`+answerchoices+` </form> `;
   }
@@ -39,8 +41,13 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
   }
 
   handleStart() {
+    
     this.model.toggleActive();
-
     this.model.update();
+  }
+  nextQuestion(){
+    this.model.nextQuestion();
+    this.model.update();
+    
   }
 }
