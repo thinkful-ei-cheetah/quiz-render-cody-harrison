@@ -45,8 +45,6 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
     this.model.update();
   }
   nextQuestion(){
-    // this.model.asked ( $('input[name=answer]:checked').val());
-    // console.log(this.model.asked);
     this.model.nextQuestion();
     this.model.update();
     

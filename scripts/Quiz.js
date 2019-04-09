@@ -11,26 +11,27 @@ class Quiz extends Model {
     this.active = false;
   }
   nextQuestion(){
-    let userAnwer =$('input[name=answer]:checked').val();
-    let current = this.unasked[0];
-    current.submitAnswer(userAnwer);
-    let correctCurrent = current.answerStatus();
-    this.asked.push(this.unasked.splice(0,1));
-    
-    console.log(correctCurrent);
-  }
-  // addScore(userAnswer,correctAnswer){
+    if(this.unasked.length === 0){
+      this.scoreHistory.push(this.score);
+      // this.toggleActive();
+    }else{
+      let userAnwer =$('input[name=answer]:checked').val();
+      let current = this.unasked[0];
+      current.submitAnswer(userAnwer);
+      let correctCurrent = current.answerStatus();
+      this.asked.push(this.unasked.splice(0,1));
       
-  //   if(userAnswer === correctAnswer){
-  //     this.score++;
-  //   }
-  //   this.scoreHistory.push(this.score);
-  // }
-  toggleActive(){
-    if(this.active===false){
-      this.active =true;
+      if(correctCurrent > 0){
+        this.score ++;
+      }
     }
+  }
     
+  
+
+
+  toggleActive(){
+    this.active = !this.active;
   }
   startNewGame() {
     const api = new trivaAPI();
