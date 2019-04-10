@@ -1,5 +1,5 @@
 'use strict';
-/*global Question,trivaAPI, Model,$, Quiz */
+/*global Question,TrivaAPI, Model,$, Quiz */
 let testQuestion;
 class Quiz extends Model {
   
@@ -11,7 +11,7 @@ class Quiz extends Model {
     this.scoreHistory= [];
     this.active = false;
     this.DEFAULT_QUIZ_LENGTH =2;
-    this.api = new trivaAPI();
+    this.api = new TrivaAPI();
   }
   
   _getInitiaQuestions() {
@@ -92,10 +92,10 @@ class Quiz extends Model {
   }
 
   newHighScore(){
-    const newScore = this.scoreHistory[];
+    const newScore = this.scoreHistory[0];
     const highestScore = Math.max(...this.scoreHistory);
 
-    if(newScore === highestScore && this.hadDoubleScore(new)){
+    if(newScore === highestScore && this.hadDoubleScore(newScore)){
       return false;
     }
     if(newScore >= highestScore){

@@ -1,5 +1,5 @@
 'use strict';
-/*global trivaAPI Model */
+/*global TrivaAPI Model */
 class Question extends Model{
   constructor(questionData){
     super();
