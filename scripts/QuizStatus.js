@@ -1,11 +1,23 @@
 /* global Renderer */
 'use strict';
 
-class QuizStatus extends Renderer {    // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+class QuizStatus extends Renderer {
   template() {
+    const score = this.model.score;
+    const highScore = this.model.getHighScore();
+    const current = this.model.asked.length;
+    const total = this.model.asked.length + this.model.unasked.length;
+
     return `
-      <div>Status Bar
-      <p> Score : ${this.model.score} High Score : ${this.model.scoreHistory}</p>
+      <div>
+        Score: ${score}
+      </div>
+      <div>
+        High Score: ${highScore}
+      </div>
+      <div>
+        Progress: ${current === 0 ? 'Inactive' : `${current} of ${total}` }
       </div>
     `;
   }

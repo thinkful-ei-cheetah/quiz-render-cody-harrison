@@ -1,12 +1,12 @@
-/* global Renderer $ */
+/* global Renderer */
 'use strict';
-
-class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+class QuizDisplay extends Renderer {
   getEvents() {
     return {
-      'click .start': 'handleStart',
-      'click .submit': 'handleAnswerQuestion',
-      'click .continue': 'handleNextQuestion'
+      'click .start-quiz': 'handleStart',
+      'submit .answer-form': 'handleAnswerQuestion',
+      'click .continue': 'handleContinue',
     };
   }
 
@@ -17,89 +17,119 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
           Welcome to the Trivia Quiz
         </p>
         <p>
-          Test your Smarts and see how high you can score!
+          Test your smarts and see how high you can score!
         </p>
       </div>
       <div>
-        <button class="start">Start</button>
+        <button class="start-quiz">Start Quiz</button>
       </div>
     `;
   }
 
   _generateQuestion() {
-    let answerchoices=''; 
-    this.model.unasked[0].answers.forEach(answer=>answerchoices+=`<li><input name="answer" class="answer" type="radio"  value="${answer}"><label> ${answer}</lable></li>`); 
-    return `<form>${this.model.unasked[0].text} 
-    ${answerchoices}<button class="submit" type="button">Submit</button></form>`;
+    const question = this.model.getCurrentQuestion();
+    return `
+      <div>
+        <p>
+          ${question.text}
+        </p>
+        <form class="answer-form">
+          <div>
+            ${question.answers.map((answer, ind) => `
+              <div>
+                <input type="radio" name="answer" id="answer-${ind}" value="${answer}" />
+                <label for="answer-${ind}">${answer}</label>
+              </div>
+            `).join('')}
+          </div>
+          <div>
+            <input type="submit" />
+          </div>
+        </form>
+      </div>
+`;
   }
-  _generateFeedback(){
-    const current = this.model.currentQuestion();
+
+  _generateFeedback() {
+    const current = this.model.getCurrentQuestion();
     let html = '';
-    if(current.answerStatus() === 1){
+    if (current.answerStatus() === 1) {
+      html +=  `
+        <div>
+          <p>
+            Great job! You got the right answer.
+          </p>
+          <p>
+            ${current.correctAnswer}
+          </p>
+        </div>
+`;
+    } else {
       html += `
-      <div>
-      <p>
-        Great job! You got the right answer.
-      </p>
-      <p>
-        ${current.correctAnswer}
-      </p>
-      </div>
-      `;
-    }else{
-      html+= `
-      <div>
-      <p>
-       You answered : ${current.userAnser}
-      </p>
-      <p>
-        The correct answer is :
-      <p>
-        ${current.correctAnswer}
-      </p>
-      </div>
+        <div>
+          <p>
+            Sorry, that's incorrect.
+          </p>
+          <p>
+            You answered: ${current.userAnswer} 
+          </p>
+          <p>
+            The correct answer is:
+          </p>
+          <p>
+            ${current.correctAnswer}
+          </p>
+        </div>
       `;
     }
+
     html += `
-    <div>
-      <button class="continue">Continue</button>
-    </div>`;
+      <div>
+        <button class="continue">Continue</button>
+      </div>
+    `;
     return html;
   }
 
-  _generateOutro(){
+  _generateOutro() {
     let highText = '';
-    if(this.model.newhighScore()){
-      highText =`
-      <p>
-        You have a new high score!
-      </p>`;
+    if (this.model.isNewHighScore()) {
+      highText = `
+        <p>
+          You have a new high score!
+        </p>
+      `;
     }
-    return `
-    <div>
-      <p>
-      Thanks for Playing!
-      </p>
-      ${highText}
-      <div>
-        <button class="start-quiz">Play Again</button>
-      </div>
-      </div>`;
-  }
 
+    return `
+      <div>
+        <p>
+          Thanks for playing!
+        </p>
+        ${highText}
+        <div>
+          <button class="start-quiz">Play Again</button>
+        </div>
+      </div>
+`;
+  }
 
   template() {
     let html;
-    const currentQuestion = this.model.correctQuestion();
+    const currentQuestion = this.model.getCurrentQuestion();
     const answerStatus = currentQuestion && currentQuestion.answerStatus();
-
+    
     if (this.model.asked.length === 0) {
+      // Quiz has not started
       html = this._generateIntro();
-    } else if(this.model.active && answerStatus === -1) {
+    } else if (this.model.active && answerStatus === -1) {
+      // Quiz is active and question unanswered
       html = this._generateQuestion();
-    } else if(this.model.active && answerStatus !== -1){
+    } else if (this.model.active && answerStatus !== -1) {
+      // Quiz is active and question answered
       html = this._generateFeedback();
-    }else{
+    } else {
+      // Quiz is finished
       html = this._generateOutro();
     }
     return html;
@@ -109,13 +139,14 @@ class QuizDisplay extends Renderer {    // eslint-disable-line no-unused-vars
     this.model.startNewGame();
   }
 
-  handelAnswerQuestion(e){
+  handleAnswerQuestion(e) {
     e.preventDefault();
     const userAnswer = e.target.answer.value;
     this.model.answerQuestion(userAnswer);
   }
-  handleNextQuestion(){
+
+  handleContinue() {
     this.model.nextQuestion();
-    
   }
+
 }

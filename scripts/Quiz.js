@@ -1,134 +1,135 @@
-'use strict';
-/*global Question,TrivaAPI, Model,$, Quiz */
-let testQuestion;
-class Quiz extends Model {
-  
-  constructor(){
+/* global Question, Model, TriviaApi */
+
+/* Quiz class */
+class Quiz extends Model {          // eslint-disable-line no-unused-vars
+
+  static DEFAULT_QUIZ_LENGTH = 2;
+
+  constructor() {
     super();
-    this.unasked= [];
+
+    // Array of Question instances
+    this.unasked = [];
+    // Array of Question instances
     this.asked = [];
+
     this.score = 0;
-    this.scoreHistory= [];
+    this.scoreHistory = [];
     this.active = false;
-    this.DEFAULT_QUIZ_LENGTH =2;
-    this.api = new TrivaAPI();
+    this.api = new TriviaApi();
   }
-  
-  _getInitiaQuestions() {
-    return this.api.getQuestions(Quiz.DEFAULT_QUIZ_LENGTH)
+
+  // Private method
+  _getInitialQuestions() {
+    return this.api.fetchQuestions(Quiz.DEFAULT_QUIZ_LENGTH)
       .then(data => {
-        console.log(data.results);
         const questions = data.results;
         questions.forEach(question => this.unasked.push(new Question(question)));
       });
   }
-  
-  scoreIncrease(){
+
+  // Private method
+  _increaseScore() {
     this.score++;
   }
 
-  hadDoubleScore(targetScore){
-    let count = 0 ;
-    for(const score of this.scoreHistory){
-      if(score === targetScore){
+  /**
+   * (private method)
+   * Determines if more than one instance of `targetScore` in history
+   * Returns {Boolean} 
+   */
+  _hasDupeScore(targetScore) {
+    let count = 0;
+    for (const score of this.scoreHistory) {
+      if (score === targetScore) {
         count++;
-        if(count>1) return true;
+        if (count > 1) return true;
       }
     }
     return false;
   }
-  
-  startNewGame(){
+
+  /**
+   * Resets all props (except scoreHistory) and starts new quiz session
+   */
+  startNewGame() {
     this.unasked = [];
-    this.asked =[];
+    this.asked = [];
     this.score = 0;
     this.active = true;
 
-    this._getInitiaQuestions()
-      .then(()=> this.nextQuestion())
+    this._getInitialQuestions()
+      .then(() => this.nextQuestion())
       .catch(err => console.log(err));
   }
-  
-  nextQuestion(){
-    const current = this._getInitiaQuestions();
-    if(current && current.userAnwer=== undefined){
-      throw new Error('Must answer question');
+
+  /**
+   * Moves Quiz to next question
+   * Returns {Question} - current question
+   */
+  nextQuestion() {
+    const current = this.getCurrentQuestion();
+
+    if (current && current.userAnswer === undefined) {
+      throw new Error('Must answer question before advancing to next');
     }
-    if(this.unasked.length === 0){
-      this.active === false;
+
+    if (this.unasked.length === 0) {
+      this.active = false;
       this.scoreHistory.unshift(this.score);
       this.update();
       return null;
     }
+    
     this.asked.unshift(this.unasked.pop());
     this.update();
     return this.asked[0];
-      
   }
 
-  answerQuestion(answerText){
-    const current = this._getInitiaQuestions();
+  /**
+   * Sets status of current Question to incorrect (0) or correct (1)
+   * Status can only be set if at default unanswered -1 
+   * Returns {boolean}
+   */
+  answerQuestion(answerText) {
+    const current = this.getCurrentQuestion();
     let answerStatus = current.answerStatus();
 
-    if(answerStatus !== -1){
-      throw new Error('Can not answer Question twice ');
+    if (answerStatus !== -1) {
+      throw new Error('Cannot answer question twice');
     }
+
     current.submitAnswer(answerText);
     answerStatus = current.answerStatus();
 
-    if(answerStatus === 1){
-      this.scoreIncrease();
+    if (answerStatus === 1) {
+      this._increaseScore();
     }
+
     this.update();
     return answerStatus === 1;
   }
 
-  currentQuestion(){
+  getCurrentQuestion() {
     return this.asked[0];
   }
 
-  getHighScore(){
-    return this.scoreHistory.length <1 ? 0 : Math.max(...this.scoreHistory);
+  getHighScore() {
+    return this.scoreHistory.length < 1 ? 0 : Math.max(...this.scoreHistory);
   }
 
-  newHighScore(){
+  isNewHighScore() {
     const newScore = this.scoreHistory[0];
     const highestScore = Math.max(...this.scoreHistory);
 
-    if(newScore === highestScore && this.hadDoubleScore(newScore)){
+    if (newScore === highestScore && this._hasDupeScore(newScore)) {
       return false;
     }
-    if(newScore >= highestScore){
+
+    if (newScore >= highestScore) {
       return true;
     }
+
     return false;
   }
-
 }
-
-      
-
-// test.newUrl().then(()=>{
-//   const test2=new question();
-//   test2.questiontext(test.questions);
-//   test2.correctAnswerChoice(test.correctAnswers);
-//   test2.answerText(test.incorrectAnswers);
-//   const test3=new Quiz();
-//   test3.startquestions(test.questions);
-//   // test3.askedQuestions();
-//   test3.addScore(test2.correctAnswer,test2.correctAnswer);
-//   test3.questionNumber = test2.questionNumber;
-//   console.log(test3.unasked);
-// console.log(test3.asked);
-  
-  
-//   test2.questiontext(test.questions);
-//   test2.correctAnswerChoice(test.correctAnswers);
-//   test2.answerText(test.incorrectAnswers);
-//   test2.shuffle();
-//   console.log(test2.correctAnswer);
-//   console.log(test2.answers);
-    
-  
-// });
-
