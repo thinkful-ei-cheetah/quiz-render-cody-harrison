@@ -1,7 +1,8 @@
 'use strict';
 /*global trivaAPI Model */
-class Question{
+class Question extends Model{
   constructor(questionData){
+    super();
     this.text=questionData.question;
     this.answers=[...questionData.incorrect_answers,questionData.correct_answer];
     this.correctAnswer= questionData.correct_answer;
